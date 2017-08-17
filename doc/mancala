@@ -1,0 +1,77 @@
+." Manpage for MANCALA
+.Dd 17 Aug 2017
+.Dt "MANCALA" "65" "Arc676's Games"
+.Sh NAME
+.Nm mancala
+.Nd play the game Mancala
+.Sh SYNOPSIS
+.Nm
+.Op Fl bfst
+.Op Fl p Ar number
+.Sh DESCRIPTION
+Mancala is a strategy game. A board containing
+shells or pebbles is used. There are 6 small holes
+on each side and two large holes on the ends. Half
+the board belongs to each player. The aim is to get
+as many pebbles into one's large pocket as possible
+while preventing the opponent from doing the same.
+.Pp
+Each hole contains the same number of pebbles to
+start (default is 4 but can be changed with the
+.Fl p
+flag).
+The pebbles are removed from a chosen pocket and
+dropped one by one into the next pockets until there
+are no more pebbles.
+.Pp
+Captures:
+If the last pebble dropped lands in an empty pocket on
+one's half of the board, that pebble and all the contents
+of the pocket directly opposite are moved into one's
+large pocket.
+.Pp
+Free turns:
+If the last pebble lands in one's large pocket, that player
+gets another turn.
+.Pp
+If one has enough pebbles in a pocket, they might go
+around the entire board. However, pebbles from one's
+half are never dropped into the opponent's large
+pocket. This pocket is skipped and the next pebble
+is dropped into one's first pocket.
+.Sh OPTIONS
+.Bl -tag -width flag
+.It Fl b
+The board is printed automatically after
+each move. By default, the board is only
+printed when requested by the user.
+.It Fl f
+Enable fast mode. If either player possesses more than half of the
+total pebbles in the game, that player is automatically considered the
+winner because it's impossible for the other player to win. In fast mode,
+the game ends once a player comes into possession of more than 50% of the pebbles
+rather than when a player runs out of pebbles.
+.It Fl s
+The second player goes first. By default,
+the first player goes first. If 2 player
+mode is not enabled, the user is always the
+first player and the computer is the
+second.
+.It Fl t
+Enables 2 player mode. The default is
+user vs computer.
+.It Fl p Ar number
+Changes the number of pebbles in each
+pocket at the start of the game to
+.Ar number
+\. The default pebble count is 4.
+.El
+.Sh AUTHOR
+Created by Arc676.
+.Pp
+Development started September 3, 2015.
+.Sh COPYRIGHT
+Copyright (C) 2015-2017 Arc676/Alessandro Vinciguerra.
+.Pp
+Source code and man page available under GPLv3, see program
+file and gpl.txt file for details.
