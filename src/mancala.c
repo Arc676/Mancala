@@ -351,6 +351,10 @@ void playGame(){
 }
 
 int main(int argc, char * argv[]){
+	printf("Mancala  Copyright (C) 2015-2017  Arc676/Alessandro Vinciguerra\n\
+This program comes with ABSOLUTELY NO WARRANTY.\n\
+This is free software, and you are welcome to redistribute it\n\
+under the conditions of GPLv3; see LICENSE.txt for details\n");
 	int pebblesChanged = 0;
 	printf("Setting up game...\n");
 	for (int i = 1; i < argc;){
