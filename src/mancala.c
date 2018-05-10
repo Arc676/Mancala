@@ -22,6 +22,7 @@
 MancalaBoard* board;
 
 int alwaysPrintBoard = 0;
+int p1First = 1;
 int _2player = 0;
 
 void printBoard() {
@@ -64,7 +65,7 @@ void playGame() {
 		performComputerMove();
 	}
 	char * cmd = malloc(255);
-	while (!gameIsOver()) {
+	for (;;) {
 		printf("%d> ", currentPlayer);
 		fgets(cmd, 255, stdin);
 		if (!strncmp(cmd, "show", 4)) {
@@ -96,11 +97,13 @@ void playGame() {
 			}
 			if (result == MOVE_EXTRA_TURN) {
 				printf("Extra turn!\n");
-				continue;
+				if (gameIsOver(board) == NOT_OVER) {
+					continue;
+				}
 			} else if (result == MOVE_CAPTURE) {
 				printf("Capture!\n");
 			}
-			int result = gameIsOver(board);
+			result = gameIsOver(board);
 			if (result != NOT_OVER) {
 				if (result & FAST_WIN) {
 					if (result & P1_WINS) {
@@ -142,7 +145,7 @@ void playGame() {
 			} else if (currentPlayer == 2) {
 				currentPlayer = 1;
 			} else {
-				computerMove();
+				performComputerMove();
 			}
 		}
 		memset(cmd, 0, 255);
@@ -161,7 +164,6 @@ under the conditions of GPLv3; see LICENSE for details\n");
 
 	int pebblesChanged = 0;
 
-	int p1First = 1;
 	int fastMode = 0;
 	int startingPebbles = 4;
 
