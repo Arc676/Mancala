@@ -1,4 +1,4 @@
-//Copyright (C) 2015-2017  Arc676/Alessandro Vinciguerra <alesvinciguerra@gmail.com>
+//Copyright (C) 2015-2018  Arc676/Alessandro Vinciguerra <alesvinciguerra@gmail.com>
 
 //This program is free software: you can redistribute it and/or modify
 //it under the terms of the GNU General Public License as published by
@@ -17,29 +17,11 @@
 #include <math.h>
 #include <string.h>
 
-#define GOAL1	goals[0]
-#define GOAL2	goals[1]
-
-typedef enum errors{
-	NO_ERROR = 0,
-	FLAG_ERROR = 1,
-	LIMITATION_ERROR = 2,
-}errors;
-
-typedef enum moveResults{
-	MOVE_NO_EFFECT = 0,
-	MOVE_EXTRA_TURN = 1,
-	MOVE_CAPTURE = 2
-}moveResults;
-
+int p1First = 1;
 int _2player = 0;
 int fastMode = 0;
-int p1First = 1;
 int startingPebbles = 4;
 int alwaysPrintBoard = 0;
-
-int board[6 * 2 + 2];
-const int goals[] = {6, 13};
 
 void printBoard(){
 	printf("         6     5     4     3     2     1\n");
@@ -351,7 +333,7 @@ void playGame(){
 }
 
 int main(int argc, char * argv[]){
-	printf("Mancala  Copyright (C) 2015-2017  Arc676/Alessandro Vinciguerra\n\
+	printf("Mancala  Copyright (C) 2015-2018  Arc676/Alessandro Vinciguerra\n\
 This program comes with ABSOLUTELY NO WARRANTY.\n\
 This is free software, and you are welcome to redistribute it\n\
 under the conditions of GPLv3; see LICENSE.txt for details\n");
