@@ -62,10 +62,10 @@ typedef struct ComputerMoveData {
  * The game is not over
  */
 enum GameResult {
-	NOT_OVER  = 0x0000,
-	P1_WINS   = 0x0001,
-	P2_WINS   = 0x0010,
-	FAST_WIN  = 0x0100
+	NOT_OVER  = 0b0000,
+	P1_WINS   = 0b0001,
+	P2_WINS   = 0b0010,
+	FAST_WIN  = 0b0100
 };
 
 /**

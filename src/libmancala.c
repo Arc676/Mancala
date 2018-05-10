@@ -45,9 +45,9 @@ int getDistanceBetween(int p1, int p2) {
 int gameIsOver(MancalaBoard* board) {
 	//in fast mode, if either player possesses more than half the pebbles, that player wins and the game ends
 	if (board->fastMode) {
-		if (board->board[MANCALA_GOAL1] >= 6 * board->startingPebbles) {
+		if (board->board[MANCALA_GOAL1] > 6 * board->startingPebbles) {
 			return P1_WINS | FAST_WIN;
-		} else if (board->board[MANCALA_GOAL2] >= 6 * board->startingPebbles) {
+		} else if (board->board[MANCALA_GOAL2] > 6 * board->startingPebbles) {
 			return P2_WINS | FAST_WIN;
 		}
 	}
@@ -82,9 +82,9 @@ int gameIsOver(MancalaBoard* board) {
 	if (p1over || p2over) {
 		int result = P1_WINS | P2_WINS;
 		if (board->board[MANCALA_GOAL1] > board->board[MANCALA_GOAL2]) {
-			result &= !P2_WINS;
+			result &= ~P2_WINS;
 		} else if (board->board[MANCALA_GOAL1] < board->board[MANCALA_GOAL2]) {
-			result &= !P1_WINS;
+			result &= ~P1_WINS;
 		}
 		return result;
 	}
