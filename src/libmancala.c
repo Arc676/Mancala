@@ -32,14 +32,14 @@ int getOppositePocket(int pocket) {
 	return 12 - pocket;
 }
 
-int getDestinationPocket(int pocket, MancalaBoard* board) {
+int getDestinationPocket(MancalaBoard* board, int pocket) {
 	//destination pocket is N pockets over, where N is the number of pebbles in the source pocket
 	//the number of times the opponent's goal is crossed is N/13
-	return (pocket + board[pocket] + board[pocket] / 13) % 14;
+	return (pocket + board->board[pocket] + board->board[pocket] / 13) % 14;
 }
 
 int getDistanceBetween(int p1, int p2) {
-	return (a - b + 14) % 14;
+	return (p1 - p2 + 14) % 14;
 }
 
 int gameIsOver(MancalaBoard* board) {
@@ -53,13 +53,13 @@ int gameIsOver(MancalaBoard* board) {
 	}
 	int p1over = 1, p2over = 1, winner = 0;
 	//has either player run out of pebbles on their side?
-	for (int i = 0; i < goals[0]; i++) {
+	for (int i = 0; i < MANCALA_GOAL1; i++) {
 		if (board->board[i] != 0) {
 			p1over = 0;
 			break;
 		}
 	}
-	for (int i = goals[0] + 1; i < goals[1]; i++) {
+	for (int i = MANCALA_GOAL1 + 1; i < MANCALA_GOAL2; i++) {
 		if (board->board[i] != 0) {
 			p2over = 0;
 			break;
@@ -67,13 +67,13 @@ int gameIsOver(MancalaBoard* board) {
 	}
 	//move remaining pebbles into players' goal pockets
 	if (p2over) {
-		for (int i = 0; i < goals[0]; i++) {
+		for (int i = 0; i < MANCALA_GOAL1; i++) {
 			board->board[MANCALA_GOAL1] += board->board[i];
 			board->board[i] = 0;
 		}
 	}
 	if (p1over) {
-		for (int i = goals[0] + 1; i < goals[1]; i++) {
+		for (int i = MANCALA_GOAL1 + 1; i < MANCALA_GOAL2; i++) {
 			board->board[MANCALA_GOAL2] += board->board[i];
 			board->board[i] = 0;
 		}
@@ -94,19 +94,19 @@ int gameIsOver(MancalaBoard* board) {
 int computerPickPocket(MancalaBoard* board) {
 	//check if any pockets will yield captures
 	int maxCaptured = -1, bestPocket = 0;
-	for (int i = goals[0] + 1; i < goals[1]; i++) {
+	for (int i = MANCALA_GOAL1 + 1; i < MANCALA_GOAL2; i++) {
 		//pocket cannot result in a capture because the last pebble passes the same pocket twice
 		//	or because there are no pebbles
 		if (board->board[i] > 13 || board->board[i] == 0) {
 			continue;
 		}
-		int newpocket = getDestinationPocket(i);
+		int newpocket = getDestinationPocket(board, i);
 		//pocket cannot result in a capture because it lands on the player's side
 		if (newpocket < MANCALA_GOAL1) {
 			continue;
 		}
-		if (board[newpocket] == 0) {
-			int capture = board[getOppositePocket(newpocket)];
+		if (board->board[newpocket] == 0) {
+			int capture = board->board[getOppositePocket(newpocket)];
 			if (capture > maxCaptured) {
 				maxCaptured = capture;
 				bestPocket = i;
@@ -118,8 +118,8 @@ int computerPickPocket(MancalaBoard* board) {
 		return bestPocket;
 	}
 	//check if any pockets will yield an extra turn, starting from the pocket closest to the goal pocket
-	for (int i = goals[1] - 1; i > goals[0]; i--) {
-		if (getDestinationPocket(i) == MANCALA_GOAL2) {
+	for (int i = MANCALA_GOAL2 - 1; i > MANCALA_GOAL1; i--) {
+		if (getDestinationPocket(board, i) == MANCALA_GOAL2) {
 			return i;
 		}
 	}
@@ -128,16 +128,16 @@ int computerPickPocket(MancalaBoard* board) {
 	int maxLossPocket = 0;
 	for (int i = 0; i < MANCALA_GOAL1; i++) {
 		//passes same pocket twice or there are no pebbles
-		if (board[i] > 13 || board[i] == 0) {
+		if (board->board[i] > 13 || board->board[i] == 0) {
 			continue;
 		}
-		int newpocket = getDestinationPocket(i);
+		int newpocket = getDestinationPocket(board, i);
 		//pebble lands in goal pocket or on computer's side
 		if (newpocket >= MANCALA_GOAL1) {
 			continue;
 		}
-		if (board[newpocket] == 0) {
-			int loss = board[getOppositePocket(newpocket)];
+		if (board->board[newpocket] == 0) {
+			int loss = board->board[getOppositePocket(newpocket)];
 			if (loss > maxLoss) {
 				maxLoss = loss;
 				maxLossPocket = getOppositePocket(newpocket);
@@ -151,21 +151,21 @@ int computerPickPocket(MancalaBoard* board) {
 	//check if opponent can get an extra turn
 	int opponentNewTurns[6];
 	int lastNewTurnFound = 0;
-	for (int i = 0; i < goals[0]; i++) {
-		if (getDestinationPocket(i) == MANCALA_GOAL1) {
+	for (int i = 0; i < MANCALA_GOAL1; i++) {
+		if (getDestinationPocket(board, i) == MANCALA_GOAL1) {
 			opponentNewTurns[lastNewTurnFound++] = i;
 		}
 	}
 	for (int i = lastNewTurnFound - 1; i >= 0; i--) {
-		for (int j = goals[0] + 1; j < goals[1]; j++) {
-			if (board[j] >= getDistanceBetween(i, j)) {
+		for (int j = MANCALA_GOAL1 + 1; j < MANCALA_GOAL2; j++) {
+			if (board->board[j] >= getDistanceBetween(i, j)) {
 				return j;
 			}
 		}
 	}
 	//by default (i.e. if there are no better moves), pick the pocket farthest from the goal
-	for (int i = goals[0] + 1; i < goals[1]; i++) {
-		if (board[i] > 0) {
+	for (int i = MANCALA_GOAL1 + 1; i < MANCALA_GOAL2; i++) {
+		if (board->board[i] > 0) {
 			return i;
 		}
 	}
@@ -174,8 +174,8 @@ int computerPickPocket(MancalaBoard* board) {
 
 int move(MancalaBoard* board, int pocket, int goal) {
 	//obtain pebble count, clear pocket
-	int pebbles = board[pocket];
-	board[pocket] = 0;
+	int pebbles = board->board[pocket];
+	board->board[pocket] = 0;
 	int skippedPockets = 0;
 
 	//pebbles should not end up in this pocket
@@ -191,7 +191,7 @@ int move(MancalaBoard* board, int pocket, int goal) {
 			continue;
 		}
 		//add pebble, then move on
-		board[newpocket]++;
+		board->board[newpocket]++;
 		i++;
 	}
 	int result = MOVE_NO_EFFECT;
@@ -201,10 +201,10 @@ int move(MancalaBoard* board, int pocket, int goal) {
 	} else {
 		//check if last pebble landed in empty pocket in current player's side and not the goal pocket
 		int oppositePocket = getOppositePocket(newpocket);
-		if (board[newpocket] == 1 && board[oppositePocket] > 0 && newpocket < goal && newpocket >= opponentGoal % 13) {
-			board[goal] += board[oppositePocket] + 1;
-			board[oppositePocket] = 0;
-			board[newpocket] = 0;
+		if (board->board[newpocket] == 1 && board->board[oppositePocket] > 0 && newpocket < goal && newpocket >= opponentGoal % 13) {
+			board->board[goal] += board->board[oppositePocket] + 1;
+			board->board[oppositePocket] = 0;
+			board->board[newpocket] = 0;
 			result = MOVE_CAPTURE;
 		}
 	}

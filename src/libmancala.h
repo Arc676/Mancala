@@ -51,7 +51,7 @@ typedef struct MancalaBoard {
  */
 typedef struct ComputerMoveData {
 	int chosenPocket;
-	MoveResult result;
+	int result;
 } ComputerMoveData;
 
 /**
@@ -88,11 +88,11 @@ int getOppositePocket(int pocket);
 /**
  * Determines the index of the pocket in which the
  * final pebble in the given pocket will land
- * @param pocket Index of starting pocket
  * @param board Pointer to board state
+ * @param pocket Index of starting pocket
  * @return Index of the destination pocket
  */
-int getDestinationPocket(int pocket, MancalaBoard* board);
+int getDestinationPocket(MancalaBoard* board, int pocket);
 
 /**
  * Determines the number of pockets between two given
