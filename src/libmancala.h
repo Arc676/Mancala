@@ -15,38 +15,58 @@
 #ifndef LIBMANCALA_H
 #define LIBMANCALA_H
 
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-
 #define MANCALA_GOAL1	6
 #define MANCALA_GOAL2	13
 
 /**
  * Defines error types throwable by algorithms
  */
-typedef enum errors {
+enum Errors {
 	NO_ERROR = 0,
 	FLAG_ERROR = 1,
 	LIMITATION_ERROR = 2,
-} errors;
+};
 
 /**
  * Defines possible results of game moves
  */
-typedef enum moveResults {
+enum MoveResult {
 	MOVE_NO_EFFECT = 0,
 	MOVE_EXTRA_TURN = 1,
-	MOVE_CAPTURE = 2
-} moveResults;
+	MOVE_CAPTURE = 2,
+	MOVE_FAILED = 3
+};
 
 /**
  * Represents a board state for a single game
  */
 typedef struct MancalaBoard {
-	int board[14]; //6*2 pockets + 2 goals = 14
+	int board[14]; //6 * 2 pockets + 2 goals = 14
 	int fastMode;
+	int startingPebbles;
 } MancalaBoard;
+
+/**
+ * Stores information about the computer's move
+ */
+typedef struct ComputerMoveData {
+	int chosenPocket;
+	MoveResult result;
+} ComputerMoveData;
+
+/**
+ * Encodes the game result or state as a bitwise combination of the following:
+ * Player 1 wins
+ * Player 2 wins
+ * The game was won due to fast-mode
+ * The game is not over
+ */
+enum GameResult {
+	NOT_OVER  = 0x0000,
+	P1_WINS   = 0x0001,
+	P2_WINS   = 0x0010,
+	FAST_WIN  = 0x0100
+};
 
 /**
  * Sets up the initial board state given the desired number
@@ -113,7 +133,8 @@ int move(MancalaBoard* board, int pocket, int goal);
 /**
  * Computes the computer's turn given the board state
  * @param board Pointer to board state
+ * @param data Pointer to struct in which to store data regarding the computer's move
  */
-void computerMove(MancalaBoard* board);
+void computerMove(MancalaBoard* board, ComputerMoveData* data);
 
 #endif

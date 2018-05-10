@@ -17,6 +17,7 @@
 
 void setupBoard(MancalaBoard* board, int startingPebbles, int fast) {
 	board->fastMode = fast;
+	board->startingPebbles = startingPebbles;
 	for (int i = 0; i < 14; i++) {
 		if (i == MANCALA_GOAL1 || i == MANCALA_GOAL2) {
 			board->board[i] = 0;
@@ -43,33 +44,23 @@ int getDistanceBetween(int p1, int p2) {
 
 int gameIsOver(MancalaBoard* board) {
 	//in fast mode, if either player possesses more than half the pebbles, that player wins and the game ends
-	if (fastMode) {
-		if (board[GOAL1] >= 6 * startingPebbles) {
-			if (_2player) {
-				printf("Player 1 has 50%% of the pebbles or more\n");
-			} else {
-				printf("Human has 50%% of the pebbles or more\n");
-			}
-			return 1;
-		} else if (board[GOAL2] >= 6 * startingPebbles) {
-			if (_2player) {
-				printf("Player 2 has 50%% of the pebbles or more\n");
-			} else {
-				printf("Computer has 50%% of the pebbles or more\n");
-			}
-			return 1;
+	if (board->fastMode) {
+		if (board->board[MANCALA_GOAL1] >= 6 * board->startingPebbles) {
+			return P1_WINS | FAST_WIN;
+		} else if (board->board[MANCALA_GOAL2] >= 6 * board->startingPebbles) {
+			return P2_WINS | FAST_WIN;
 		}
 	}
 	int p1over = 1, p2over = 1, winner = 0;
 	//has either player run out of pebbles on their side?
 	for (int i = 0; i < goals[0]; i++) {
-		if (board[i] != 0) {
+		if (board->board[i] != 0) {
 			p1over = 0;
 			break;
 		}
 	}
 	for (int i = goals[0] + 1; i < goals[1]; i++) {
-		if (board[i] != 0) {
+		if (board->board[i] != 0) {
 			p2over = 0;
 			break;
 		}
@@ -77,36 +68,27 @@ int gameIsOver(MancalaBoard* board) {
 	//move remaining pebbles into players' goal pockets
 	if (p2over) {
 		for (int i = 0; i < goals[0]; i++) {
-			board[GOAL1] += board[i];
-			board[i] = 0;
+			board->board[MANCALA_GOAL1] += board->board[i];
+			board->board[i] = 0;
 		}
 	}
 	if (p1over) {
 		for (int i = goals[0] + 1; i < goals[1]; i++) {
-			board[GOAL2] += board[i];
-			board[i] = 0;
+			board->board[MANCALA_GOAL2] += board->board[i];
+			board->board[i] = 0;
 		}
 	}
 	//if either player has run out of pebbles, game ends
 	if (p1over || p2over) {
-		if (board[GOAL1] > board[GOAL2]) {
-			if (_2player) {
-				printf("Player 1 wins!\n");
-			} else {
-				printf("Human wins!\n");
-			}
-		} else if (board[GOAL1] < board[GOAL2]) {
-			if (_2player) {
-				printf("Player 2 wins!\n");
-			} else {
-				printf("Computer wins!\n");
-			}
-		} else {
-			printf("It's a tie!\n");
+		int result = P1_WINS | P2_WINS;
+		if (board->board[MANCALA_GOAL1] > board->board[MANCALA_GOAL2]) {
+			result &= !P2_WINS;
+		} else if (board->board[MANCALA_GOAL1] < board->board[MANCALA_GOAL2]) {
+			result &= !P1_WINS;
 		}
-		return 1;
+		return result;
 	}
-	return 0;
+	return NOT_OVER;
 }
 
 int computerPickPocket(MancalaBoard* board) {
@@ -115,12 +97,12 @@ int computerPickPocket(MancalaBoard* board) {
 	for (int i = goals[0] + 1; i < goals[1]; i++) {
 		//pocket cannot result in a capture because the last pebble passes the same pocket twice
 		//	or because there are no pebbles
-		if (board[i] > 13 || board[i] == 0) {
+		if (board->board[i] > 13 || board->board[i] == 0) {
 			continue;
 		}
 		int newpocket = getDestinationPocket(i);
 		//pocket cannot result in a capture because it lands on the player's side
-		if (newpocket < GOAL1) {
+		if (newpocket < MANCALA_GOAL1) {
 			continue;
 		}
 		if (board[newpocket] == 0) {
@@ -137,21 +119,21 @@ int computerPickPocket(MancalaBoard* board) {
 	}
 	//check if any pockets will yield an extra turn, starting from the pocket closest to the goal pocket
 	for (int i = goals[1] - 1; i > goals[0]; i--) {
-		if (getDestinationPocket(i) == GOAL2) {
+		if (getDestinationPocket(i) == MANCALA_GOAL2) {
 			return i;
 		}
 	}
 	//check if opponent can capture any pebbles
 	int maxLoss = 0;
 	int maxLossPocket = 0;
-	for (int i = 0; i < GOAL1; i++) {
+	for (int i = 0; i < MANCALA_GOAL1; i++) {
 		//passes same pocket twice or there are no pebbles
 		if (board[i] > 13 || board[i] == 0) {
 			continue;
 		}
 		int newpocket = getDestinationPocket(i);
 		//pebble lands in goal pocket or on computer's side
-		if (newpocket >= GOAL1) {
+		if (newpocket >= MANCALA_GOAL1) {
 			continue;
 		}
 		if (board[newpocket] == 0) {
@@ -170,7 +152,7 @@ int computerPickPocket(MancalaBoard* board) {
 	int opponentNewTurns[6];
 	int lastNewTurnFound = 0;
 	for (int i = 0; i < goals[0]; i++) {
-		if (getDestinationPocket(i) == GOAL1) {
+		if (getDestinationPocket(i) == MANCALA_GOAL1) {
 			opponentNewTurns[lastNewTurnFound++] = i;
 		}
 	}
@@ -226,25 +208,16 @@ int move(MancalaBoard* board, int pocket, int goal) {
 			result = MOVE_CAPTURE;
 		}
 	}
-	if (alwaysPrintBoard) {
-		printBoard();
-	}
 	return result;
 }
 
-void computerMove(MancalaBoard* board) {
-	int computerPocket = computerPickPocket();
-	if (computerPocket < goals[0] + 1 || computerPocket >= goals[1]) {
-		printf("Computer cannot move\n");
+void computerMove(MancalaBoard* board, ComputerMoveData* data) {
+	int computerPocket = computerPickPocket(board);
+	if (computerPocket < MANCALA_GOAL1 + 1 || computerPocket >= MANCALA_GOAL2) {
+		data->result = MOVE_FAILED;
 		return;
 	}
-	printf("Computer chose pocket %d\n", (computerPocket - 6));
-	int result = move(computerPocket, GOAL2);
-	if (result == MOVE_EXTRA_TURN) {
-		printf("Computer gets an extra turn!\n");
-		computerMove();
-	} else if (result == MOVE_CAPTURE) {
-		printf("Computer captured your pebble(s)!\n");
-	}
+	data->chosenPocket = computerPocket - 6;
+	data->result = move(board, computerPocket, MANCALA_GOAL2);
 }
 

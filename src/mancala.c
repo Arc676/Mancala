@@ -39,13 +39,29 @@ void help() {
 	printf("Help\nshow - show board\nhelp/? - show this list\n(pocket number) - select a pocket\nquit - quit game\n");
 }
 
+void performComputerMove() {
+	ComputerMoveData* data = (ComputerMoveData*)malloc(sizeof(ComputerMoveData));
+	computerMove(board, data);
+	if (data->result = MOVE_FAILED) {
+		printf("Computer cannot move\n");
+	}
+	printf("Computer chose pocket %d\n", data->chosenPocket);
+	if (data->result == MOVE_EXTRA_TURN) {
+		printf("Computer gets an extra turn!\n");
+		performComputerMove();
+	} else if (data->result == MOVE_CAPTURE) {
+		printf("Computer captured your pebble(s)!\n");
+	}
+	free(data);
+}
+
 void playGame() {
 	int currentPlayer = 2;
 	if (p1First || !_2player) {
 		currentPlayer = 1;
 	}
 	if (!p1First && !_2player) {
-		computerMove();
+		performComputerMove();
 	}
 	char * cmd = malloc(255);
 	while (!gameIsOver()) {
@@ -75,13 +91,50 @@ void playGame() {
 				continue;
 			}
 			int result = move(board, position, currentPlayer == 1 ? MANCALA_GOAL1 : MANCALA_GOAL2);
+			if (alwaysPrintBoard) {
+				printBoard();
+			}
 			if (result == MOVE_EXTRA_TURN) {
 				printf("Extra turn!\n");
 				continue;
 			} else if (result == MOVE_CAPTURE) {
 				printf("Capture!\n");
 			}
-			if (gameIsOver()) {
+			int result = gameIsOver(board);
+			if (result != NOT_OVER) {
+				if (result & FAST_WIN) {
+					if (result & P1_WINS) {
+						if (_2player) {
+							printf("Player 1 has 50%% of the pebbles or more\n");
+						} else {
+							printf("Human has 50%% of the pebbles or more\n");
+						}
+					} else {
+						if (_2player) {
+							printf("Player 2 has 50%% of the pebbles or more\n");
+						} else {
+							printf("Computer has 50%% of the pebbles or more\n");
+						}
+					}
+				} else {
+					if (result == P1_WINS | P2_WINS) {
+						printf("It's a tie!\n");
+					} else {
+						if (result == P1_WINS) {
+							if (_2player) {
+								printf("Player 1 wins!\n");
+							} else {
+								printf("Human wins!\n");
+							}
+						} else {
+							if (_2player) {
+								printf("Player 2 wins!\n");
+							} else {
+								printf("Computer wins!\n");
+							}
+						}
+					}
+				}
 				break;
 			}
 			if (currentPlayer == 1 && _2player) {
@@ -156,5 +209,6 @@ under the conditions of GPLv3; see LICENSE for details\n");
 	setupBoard(board, startingPebbles, fastMode);
 	printBoard();
 	playGame();
+	free(board);
 	return NO_ERROR;
 }
