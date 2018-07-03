@@ -1,4 +1,3 @@
-
 //Copyright (C) 2018  Arc676/Alessandro Vinciguerra <alesvinciguerra@gmail.com>
 
 //This program is free software: you can redistribute it and/or modify
@@ -172,7 +171,7 @@ int computerPickPocket(MancalaBoard* board) {
 	return -1;
 }
 
-int move(MancalaBoard* board, int pocket, int goal) {
+int movePocket(MancalaBoard* board, int pocket, int goal) {
 	//obtain pebble count, clear pocket
 	int pebbles = board->board[pocket];
 	board->board[pocket] = 0;
@@ -218,6 +217,6 @@ void computerMove(MancalaBoard* board, ComputerMoveData* data) {
 		return;
 	}
 	data->chosenPocket = computerPocket - 6;
-	data->result = move(board, computerPocket, MANCALA_GOAL2);
+	data->result = movePocket(board, computerPocket, MANCALA_GOAL2);
 }
 

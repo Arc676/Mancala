@@ -128,7 +128,7 @@ int computerPickPocket(MancalaBoard* board);
  * @param goal The index of the goal of the moving player
  * @return The result of the move
  */
-int move(MancalaBoard* board, int pocket, int goal);
+int movePocket(MancalaBoard* board, int pocket, int goal);
 
 /**
  * Computes the computer's turn given the board state

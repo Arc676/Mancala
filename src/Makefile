@@ -11,4 +11,4 @@ libmancala.o:
 	$(CC) $(FLAGS) libmancala.c
 
 clean:
-	rm *.a *.o mancala
+	rm -f *.a *.o mancala

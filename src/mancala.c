@@ -136,7 +136,7 @@ void playGame() {
 				printf("No pebbles in this pocket\nUse 'show' to see the board\n");
 				continue;
 			}
-			int result = move(board, position, currentPlayer == 1 ? MANCALA_GOAL1 : MANCALA_GOAL2);
+			int result = movePocket(board, position, currentPlayer == 1 ? MANCALA_GOAL1 : MANCALA_GOAL2);
 			if (alwaysPrintBoard) {
 				printBoard();
 			}
